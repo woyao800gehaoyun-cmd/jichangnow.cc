@@ -1,6 +1,7 @@
 (function(){
   const posts = (window.BLOG_POSTS || []).slice().sort((a,b)=>b.date.localeCompare(a.date));
   const esc = value => String(value).replace(/[&<>'"]/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
+  const searchableText = post => `${post.title} ${post.excerpt} ${post.tags.join(' ')} ${(post.content||'').replace(/<[^>]*>/g,' ')}`.toLowerCase();
   const card = post => `<article class="blog-post-row"><a class="post-thumb ${post.cover}" href="${window.postUrl(post)}"><span>${esc(post.category)}</span><b>${esc(post.mark)}</b></a><div class="post-row-body"><div class="post-kicker"><span>${esc(post.category)}</span><time datetime="${post.date}">${esc(post.displayDate)}</time></div><h2><a href="${window.postUrl(post)}">${esc(post.title)}</a></h2><p>${esc(post.excerpt)}</p><div class="post-row-foot"><span>${esc(post.readingTime)}阅读</span><div>${post.tags.map(tag=>`<a href="blog.html?tag=${encodeURIComponent(tag)}">#${esc(tag)}</a>`).join(' ')}</div></div></div></article>`;
 
   function categoryCounts(){
@@ -41,7 +42,7 @@
     filters.innerHTML=cats.map(c=>`<button class="blog-filter ${c===active?'active':''}" data-category="${esc(c)}">${esc(c)}</button>`).join('');
     function render(){
       const query=(search.value||'').trim().toLowerCase();
-      const shown=posts.filter(p=>(active==='全部'||p.category===active)&&(!tag||p.tags.includes(tag))&&(!month||p.date.startsWith(month))&&(!query||`${p.title} ${p.excerpt} ${p.tags.join(' ')}`.toLowerCase().includes(query)));
+      const shown=posts.filter(p=>(active==='全部'||p.category===active)&&(!tag||p.tags.includes(tag))&&(!month||p.date.startsWith(month))&&(!query||searchableText(p).includes(query)));
       allList.innerHTML=shown.map(card).join('')||'<div class="blog-empty"><h2>没有找到文章</h2><p>换一个关键词或分类试试。</p></div>';
       result.textContent=`共 ${shown.length} 篇文章${tag?` · 标签 #${tag}`:''}${month?` · ${month}`:''}`;
     }
@@ -54,6 +55,8 @@
     const slug=new URLSearchParams(location.search).get('slug'); const post=posts.find(p=>p.slug===slug&&p.content);
     if(!post){article.innerHTML='<div class="blog-empty"><h1>文章不存在</h1><p>这篇文章可能已移动或尚未发布。</p><a class="button button-primary" href="blog.html">返回文章列表</a></div>';return}
     document.title=`${post.title}｜星链测评站`;
+    const description=document.querySelector('meta[name="description"]');
+    if(description) description.setAttribute('content',post.excerpt);
     article.innerHTML=`<div class="article-breadcrumb"><a href="index.html">首页</a> / <a href="blog.html">文章</a> / ${esc(post.category)}</div><header class="article-header"><span class="eyebrow"><i></i> ${esc(post.category)}</span><h1>${esc(post.title)}</h1><p>${esc(post.excerpt)}</p><div class="article-meta-line"><time datetime="${post.date}">${esc(post.displayDate)}</time><span>${esc(post.readingTime)}阅读</span><span>星链测评站编辑</span></div></header><div class="article-cover ${post.cover}"><span>${esc(post.category)}</span><b>${esc(post.mark)}</b></div><div class="article-prose">${post.content}<div class="article-tags">${post.tags.map(t=>`<a href="blog.html?tag=${encodeURIComponent(t)}">#${esc(t)}</a>`).join('')}</div></div>`;
     const related=document.querySelector('#relatedPosts');
     if(related){
