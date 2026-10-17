@@ -56,3 +56,11 @@ html[data-theme] body{background:var(--bg);color:var(--text)}html[data-theme] .s
 .rank-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
 @media(max-width:1000px){.rank-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:720px){.rank-grid{grid-template-columns:1fr}}
+
+/* 浅色主题可读性：替换仅适合深色背景的浅灰蓝文字 */
+html:is([data-theme="light"],[data-theme="ocean"],[data-theme="sand"]) .content-table-wrap{background:var(--surface);border-color:var(--line)}
+html:is([data-theme="light"],[data-theme="ocean"],[data-theme="sand"]) .content-table td{color:var(--text);font-weight:550}
+html:is([data-theme="light"],[data-theme="ocean"],[data-theme="sand"]) .content-table td strong{color:var(--text);font-weight:850}
+html:is([data-theme="light"],[data-theme="ocean"],[data-theme="sand"]) .content-table tbody tr:nth-child(even){background:rgba(14,159,123,.035)}
+html:is([data-theme="light"],[data-theme="ocean"],[data-theme="sand"]) :is(.check-list li,.ticker-track,.content-stats span,.info-card ul,.download-card ul,.safety-box p,.safety-box li,.field label,.review-article p,.review-article li,.notice,.article-prose,.article-callout,.blog-more){color:var(--muted)}
+html:is([data-theme="light"],[data-theme="ocean"],[data-theme="sand"]) :is(.review-meta,.post-row-foot,.footer-bottom,.article-meta-line){color:var(--muted)}
